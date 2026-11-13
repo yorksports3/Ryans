@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DAD. — Jokes on Demand</title>
+  <meta name="theme-color" content="#0b0b0c" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,800;1,9..144,400&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="top">
+    <div class="brand">DAD<span>.</span></div>
+    <nav>
+      <button class="link" id="favToggle" aria-expanded="false">Saved <span id="favCount">0</span></button>
+    </nav>
+  </header>
+
+  <main>
+    <p class="eyebrow"><span class="rule"></span> Jokes on demand · <span id="counter">No. 001</span></p>
+
+    <article class="card" id="card" aria-live="polite">
+      <h1 class="setup" id="setup">Loading something groan-worthy…</h1>
+      <p class="punchline" id="punchline"></p>
+    </article>
+
+    <div class="actions">
+      <button class="btn primary" id="primaryBtn">Reveal punchline</button>
+      <button class="btn icon" id="saveBtn" title="Save joke" aria-label="Save joke">☆</button>
+      <button class="btn icon" id="copyBtn" title="Copy joke" aria-label="Copy joke">⧉</button>
+      <button class="btn icon" id="shareBtn" title="Share joke" aria-label="Share joke">↗</button>
+    </div>
+
+    <div class="meter">
+      <span>Groan meter</span>
+      <div class="stars" id="rating" role="radiogroup" aria-label="Rate this joke">
+        <button data-v="1" aria-label="1">●</button><button data-v="2" aria-label="2">●</button><button data-v="3" aria-label="3">●</button><button data-v="4" aria-label="4">●</button><button data-v="5" aria-label="5">●</button>
+      </div>
+    </div>
+
+    <p class="hint">Press <kbd>Space</kbd> to reveal / next · <kbd>S</kbd> to save</p>
+  </main>
+
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-head">
+      <h2>Saved jokes</h2>
+      <button class="link" id="closeDrawer">Close ✕</button>
+    </div>
+    <ol id="favList"></ol>
+    <p class="empty" id="favEmpty">Nothing saved yet. Hit ☆ on a joke worth repeating at dinner.</p>
+  </aside>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="jokes.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
