@@ -14,3 +14,13 @@ No build step. Open `index.html` in a browser, or serve the folder:
 ```sh
 python3 -m http.server 8000
 ```
+
+## Adding jokes
+Write new jokes one per line as `setup|punchline` in a text file, then run:
+
+```sh
+node scripts/add_jokes.js new-jokes.txt
+```
+
+Duplicates (same setup or same punchline) are skipped automatically. A weekly
+scheduled task adds 15 new jokes this way and republishes the hosted page.
