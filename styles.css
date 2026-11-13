@@ -69,7 +69,6 @@ main {
   margin-bottom: 36px;
 }
 .rule { width: 48px; height: 2px; background: var(--gold); }
-#counter { color: var(--gold); }
 
 .card { min-height: 46vh; }
 

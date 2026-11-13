@@ -2,7 +2,7 @@
   const $ = (id) => document.getElementById(id);
   const setupEl = $("setup"), punchEl = $("punchline"), primaryBtn = $("primaryBtn");
   const saveBtn = $("saveBtn"), copyBtn = $("copyBtn"), shareBtn = $("shareBtn");
-  const counterEl = $("counter"), ratingEl = $("rating"), toastEl = $("toast");
+  const ratingEl = $("rating"), toastEl = $("toast");
   const drawer = $("drawer"), favToggle = $("favToggle"), favList = $("favList");
   const favEmpty = $("favEmpty"), favCount = $("favCount");
 
@@ -13,7 +13,6 @@
 
   let favs = store.get("dad.favs", []);
   let ratings = store.get("dad.ratings", {});
-  let count = store.get("dad.count", 0);
   let current = null;
   let revealed = false;
   let deck = [];
@@ -80,8 +79,6 @@
     const j = await getJoke();
     seen.add(keyOf(j));
     current = j;
-    count++; store.set("dad.count", count);
-    counterEl.textContent = "No. " + String(count).padStart(3, "0");
 
     setupEl.classList.remove("enter"); void setupEl.offsetWidth;
     setupEl.textContent = j.setup;
