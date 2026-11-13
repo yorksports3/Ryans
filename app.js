@@ -8,7 +8,7 @@
 
   const store = {
     get: (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
-    set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+    set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
   };
 
   let favs = store.get("dad.favs", []);
@@ -18,6 +18,7 @@
   let revealed = false;
   let deck = [];
   const seen = new Set();
+  let online = true; // turned off after the first failed fetch
 
   const keyOf = (j) => (j.setup + "|" + j.punch).toLowerCase();
 
@@ -60,12 +61,12 @@
 
   async function getJoke() {
     // Alternate between online and local for variety; fall back silently.
-    if (Math.random() < 0.6) {
+    if (online && Math.random() < 0.6) {
       for (let i = 0; i < 2; i++) {
         try {
           const j = await fetchOnline();
           if (!seen.has(keyOf(j))) return j;
-        } catch { break; }
+        } catch { online = false; break; }
       }
     }
     return nextLocal();
@@ -161,8 +162,10 @@
     catch { toast("Copy unavailable"); }
   });
   shareBtn.addEventListener("click", async () => {
-    if (navigator.share) { try { await navigator.share({ text: jokeText() }); } catch {} }
-    else { try { await navigator.clipboard.writeText(jokeText()); toast("Copied to share"); } catch {} }
+    try { await navigator.share({ text: jokeText() }); return; }
+    catch (e) { if (e && e.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(jokeText()); toast("Copied to share"); }
+    catch { toast("Share unavailable"); }
   });
   favToggle.addEventListener("click", () => setDrawer(!drawer.classList.contains("open")));
   $("closeDrawer").addEventListener("click", () => setDrawer(false));
