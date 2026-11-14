@@ -2,7 +2,7 @@
   const $ = (id) => document.getElementById(id);
   const setupEl = $("setup"), punchEl = $("punchline"), primaryBtn = $("primaryBtn");
   const saveBtn = $("saveBtn"), copyBtn = $("copyBtn"), shareBtn = $("shareBtn");
-  const ratingEl = $("rating"), toastEl = $("toast"), scrim = $("scrim");
+  const ratingEl = $("rating"), groanEl = $("groan"), verdictEl = $("verdict"), toastEl = $("toast"), scrim = $("scrim");
   const drawer = $("drawer"), favToggle = $("favToggle"), favList = $("favList");
   const favEmpty = $("favEmpty"), favCount = $("favCount");
   const settings = $("settings"), dailyOn = $("dailyOn"), dailyTime = $("dailyTime"), dailyNote = $("dailyNote");
@@ -105,12 +105,13 @@
     seen.add(keyOf(j));
     current = j;
     punchEl.classList.remove("show");
+    showGroan(false);
     setupEl.classList.remove("enter"); void setupEl.offsetWidth;
     setupEl.textContent = j.setup;
     setupEl.classList.add("enter");
     punchEl.textContent = j.punch;
     revealed = !j.punch;
-    if (revealed) punchEl.classList.add("show");
+    if (revealed) { punchEl.classList.add("show"); showGroan(true); }
     setPrimary(revealed ? "Another one" : "Reveal punchline");
     syncSave(); syncRating();
   }
@@ -118,6 +119,7 @@
   async function loadJoke() {
     primaryBtn.disabled = true;
     punchEl.classList.remove("show");
+    showGroan(false);
     showJoke(await getJoke());
     primaryBtn.disabled = false;
   }
@@ -125,6 +127,7 @@
   function reveal() {
     revealed = true;
     punchEl.classList.add("show");
+    showGroan(true);
     setPrimary("Another one");
     haptic("MEDIUM");
   }
@@ -178,17 +181,41 @@
   }
   const closePanels = () => setPanel(null, false);
 
-  // ---------- Rating ----------
+  // ---------- Groan meter ----------
+  const VERDICTS = ["Meh.", "Eye roll.", "Solid groan.", "Painful.", "Peak dad."];
+  const groanBtns = [...ratingEl.querySelectorAll("button")];
+
+  function showGroan(on) {
+    groanEl.classList.toggle("show", on);
+    groanEl.setAttribute("aria-hidden", String(!on));
+  }
   function syncRating() {
     const v = current ? ratings[keyOf(current)] || 0 : 0;
-    [...ratingEl.children].forEach((b) => b.classList.toggle("lit", +b.dataset.v <= v));
+    groanBtns.forEach((b) => {
+      b.classList.toggle("lit", +b.dataset.v <= v);
+      b.setAttribute("aria-checked", String(+b.dataset.v === v));
+    });
+    verdictEl.textContent = v ? VERDICTS[v - 1] : "How bad was it?";
+    verdictEl.classList.toggle("rated", !!v);
+  }
+  function rate(v) {
+    if (!current || !revealed) return;
+    ratings[keyOf(current)] = v; store.set("dad.ratings", ratings); syncRating();
+    groanBtns.forEach((b) => {
+      b.classList.remove("pop");
+      if (+b.dataset.v <= v) { void b.offsetWidth; b.classList.add("pop"); }
+    });
+    haptic(v >= 5 ? "HEAVY" : v >= 3 ? "MEDIUM" : "LIGHT");
   }
   ratingEl.addEventListener("click", (e) => {
-    const b = e.target.closest("button"); if (!b || !current) return;
-    ratings[keyOf(current)] = +b.dataset.v; store.set("dad.ratings", ratings); syncRating();
-    haptic("LIGHT");
-    toast(["Mild chuckle", "Eye roll", "Solid groan", "Painful", "Peak dad"][b.dataset.v - 1]);
+    const b = e.target.closest("button"); if (b) rate(+b.dataset.v);
   });
+  // Hover preview: light the bars up to the one under the pointer.
+  ratingEl.addEventListener("mouseover", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    groanBtns.forEach((x) => x.classList.toggle("preview", +x.dataset.v <= +b.dataset.v));
+  });
+  ratingEl.addEventListener("mouseleave", () => groanBtns.forEach((x) => x.classList.remove("preview")));
 
   // ---------- Daily notification (iOS app only) ----------
   // iOS repeats a notification with identical text, so instead we schedule one
@@ -299,6 +326,7 @@
     if (e.target.closest("input, textarea")) return;
     if (e.code === "Space") { e.preventDefault(); if (!primaryBtn.disabled) primaryBtn.click(); }
     else if (e.key.toLowerCase() === "s") toggleSave();
+    else if (/^[1-5]$/.test(e.key)) rate(+e.key);
     else if (e.key === "Escape") closePanels();
   });
 

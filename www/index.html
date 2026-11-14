@@ -26,6 +26,17 @@
     <article class="card" id="card" aria-live="polite">
       <h1 class="setup" id="setup">Loading something groan-worthy…</h1>
       <p class="punchline" id="punchline"></p>
+
+      <div class="groan" id="groan" aria-hidden="true">
+        <p class="groan-head"><span class="groan-label">Groan meter</span> <span class="verdict" id="verdict">How bad was it?</span></p>
+        <div class="scale" id="rating" role="radiogroup" aria-label="Rate the groan">
+          <button data-v="1" role="radio" aria-checked="false" aria-label="1 of 5: Meh"><span class="bar"></span><span class="name">Meh</span></button>
+          <button data-v="2" role="radio" aria-checked="false" aria-label="2 of 5: Eye roll"><span class="bar"></span><span class="name">Eye roll</span></button>
+          <button data-v="3" role="radio" aria-checked="false" aria-label="3 of 5: Groan"><span class="bar"></span><span class="name">Groan</span></button>
+          <button data-v="4" role="radio" aria-checked="false" aria-label="4 of 5: Painful"><span class="bar"></span><span class="name">Painful</span></button>
+          <button data-v="5" role="radio" aria-checked="false" aria-label="5 of 5: Peak dad"><span class="bar"></span><span class="name">Peak dad</span></button>
+        </div>
+      </div>
     </article>
 
     <div class="actions">
@@ -35,14 +46,7 @@
       <button class="btn icon" id="shareBtn" title="Share joke" aria-label="Share joke">↗</button>
     </div>
 
-    <div class="meter">
-      <span>Groan meter</span>
-      <div class="stars" id="rating" role="radiogroup" aria-label="Rate this joke">
-        <button data-v="1" aria-label="1">●</button><button data-v="2" aria-label="2">●</button><button data-v="3" aria-label="3">●</button><button data-v="4" aria-label="4">●</button><button data-v="5" aria-label="5">●</button>
-      </div>
-    </div>
-
-    <p class="hint">Press <kbd>Space</kbd> to reveal / next · <kbd>S</kbd> to save</p>
+    <p class="hint">Press <kbd>Space</kbd> to reveal / next · <kbd>1</kbd>–<kbd>5</kbd> to rate · <kbd>S</kbd> to save</p>
     <p class="foot"><a href="privacy.html">Privacy</a></p>
   </main>
 
