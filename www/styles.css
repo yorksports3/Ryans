@@ -13,7 +13,9 @@
 
 html, body { height: 100%; }
 
+html { -webkit-tap-highlight-color: transparent; }
 body {
+  -webkit-user-select: none; user-select: none;
   background:
     radial-gradient(1200px 600px at 85% -10%, rgba(232, 185, 74, 0.14), transparent 60%),
     radial-gradient(900px 500px at -10% 110%, rgba(232, 185, 74, 0.08), transparent 60%),
@@ -36,7 +38,9 @@ body {
 .top {
   position: relative; z-index: 1;
   display: flex; justify-content: space-between; align-items: center;
-  padding: 28px clamp(20px, 5vw, 64px);
+  padding: calc(28px + env(safe-area-inset-top)) clamp(20px, 5vw, 64px) 28px;
+  padding-left: max(clamp(20px, 5vw, 64px), env(safe-area-inset-left));
+  padding-right: max(clamp(20px, 5vw, 64px), env(safe-area-inset-right));
   border-bottom: 1px solid var(--line);
 }
 .brand {
@@ -50,6 +54,9 @@ body {
   opacity: 0.8; transition: opacity .2s;
 }
 .link:hover { opacity: 1; }
+nav { display: flex; gap: 28px; align-items: center; }
+.native-only { display: none; }
+.is-native .native-only { display: inline-block; }
 #favCount {
   display: inline-grid; place-items: center; min-width: 22px; height: 22px; margin-left: 6px;
   border-radius: 999px; background: var(--gold); color: var(--bg); font-weight: 700; letter-spacing: 0;
@@ -59,7 +66,7 @@ body {
 main {
   position: relative; z-index: 1; flex: 1;
   width: 100%; max-width: 1100px; margin: 0 auto;
-  padding: clamp(40px, 9vh, 110px) clamp(20px, 5vw, 64px) 48px;
+  padding: clamp(40px, 9vh, 110px) clamp(20px, 5vw, 64px) calc(48px + env(safe-area-inset-bottom));
   display: flex; flex-direction: column;
 }
 
@@ -142,7 +149,7 @@ kbd {
 .drawer {
   position: fixed; top: 0; right: 0; height: 100%; width: min(460px, 100%); z-index: 10;
   background: #121213; border-left: 1px solid var(--line);
-  padding: 32px; overflow-y: auto;
+  padding: calc(32px + env(safe-area-inset-top)) 32px calc(32px + env(safe-area-inset-bottom)); overflow-y: auto;
   transform: translateX(100%); transition: transform .45s cubic-bezier(.2,.7,.2,1);
   box-shadow: -30px 0 80px rgba(0,0,0,.5);
 }
@@ -167,9 +174,41 @@ kbd {
 #favList .rm:hover { color: var(--ink); }
 .empty { color: var(--muted); font-size: 14px; line-height: 1.6; }
 
+/* Settings */
+.sub { color: var(--muted); line-height: 1.6; margin-bottom: 28px; }
+.row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 0; border-top: 1px solid var(--line);
+  font: 600 15px var(--sans);
+}
+.row:last-of-type { border-bottom: 1px solid var(--line); }
+input[type="time"] {
+  background: transparent; color: var(--gold); border: 1px solid var(--line); border-radius: 10px;
+  padding: 8px 12px; font: 700 16px var(--sans); color-scheme: dark;
+}
+.switch {
+  appearance: none; -webkit-appearance: none; width: 52px; height: 32px; border-radius: 999px;
+  background: rgba(244,239,230,.15); position: relative; cursor: pointer; transition: background .2s;
+}
+.switch::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--ink); transition: transform .2s;
+}
+.switch:checked { background: var(--gold); }
+.switch:checked::after { transform: translateX(20px); background: var(--bg); }
+.note { color: var(--gold); font-size: 13px; margin-top: 16px; min-height: 1em; }
+.fine { color: var(--muted); font-size: 12px; line-height: 1.6; margin-top: 40px; }
+.fine a { color: var(--ink); }
+
+.scrim {
+  position: fixed; inset: 0; z-index: 9; background: rgba(0,0,0,.5);
+  opacity: 0; pointer-events: none; transition: opacity .3s;
+}
+.scrim.show { opacity: 1; pointer-events: auto; }
+
 /* Toast */
 .toast {
-  position: fixed; left: 50%; bottom: 32px; z-index: 20;
+  position: fixed; left: 50%; bottom: calc(32px + env(safe-area-inset-bottom)); z-index: 20;
   transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
   background: var(--ink); color: var(--bg); padding: 14px 24px; border-radius: 999px;
   font: 700 12px var(--sans); letter-spacing: .16em; text-transform: uppercase;
@@ -185,3 +224,4 @@ kbd {
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+.is-native .hint { display: none; }

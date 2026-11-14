@@ -2,12 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>DAD. — Jokes on Demand</title>
   <meta name="theme-color" content="#0b0b0c" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,800;1,9..144,400&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="fonts.css" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -16,6 +14,7 @@
   <header class="top">
     <div class="brand">DAD<span>.</span></div>
     <nav>
+      <button class="link native-only" id="settingsToggle" aria-label="Daily joke settings">Daily</button>
       <button class="link" id="favToggle" aria-expanded="false">Saved <span id="favCount">0</span></button>
     </nav>
   </header>
@@ -54,6 +53,26 @@
     <p class="empty" id="favEmpty">Nothing saved yet. Hit ☆ on a joke worth repeating at dinner.</p>
   </aside>
 
+  <aside class="drawer" id="settings" aria-hidden="true">
+    <div class="drawer-head">
+      <h2>Daily joke</h2>
+      <button class="link" id="closeSettings">Close ✕</button>
+    </div>
+    <p class="sub">A fresh setup lands on your lock screen every day. Open the app for the punchline.</p>
+    <label class="row">
+      <span>Daily notification</span>
+      <input type="checkbox" class="switch" id="dailyOn" />
+    </label>
+    <label class="row">
+      <span>Time</span>
+      <input type="time" id="dailyTime" value="08:00" />
+    </label>
+    <p class="note" id="dailyNote"></p>
+    <p class="fine">No accounts, no tracking. Your saved jokes stay on this device.
+      <a href="privacy.html">Privacy policy</a></p>
+  </aside>
+
+  <div class="scrim" id="scrim"></div>
   <div class="toast" id="toast"></div>
 
   <script src="jokes.js"></script>

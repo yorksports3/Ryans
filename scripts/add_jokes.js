@@ -7,7 +7,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const file = path.join(__dirname, "..", "jokes.js");
+const file = path.join(__dirname, "..", "www", "jokes.js");
 const window = {};
 new Function("window", fs.readFileSync(file, "utf8"))(window);
 const jokes = window.LOCAL_JOKES;

@@ -9,14 +9,22 @@ A bold, premium-feeling dad joke generator. Dark editorial design, gold accents,
 - Saved jokes and ratings persist in your browser
 
 ## Run it
-No build step. Open `index.html` in a browser, or serve the folder:
+**Web:** no build step. Open `www/index.html` in a browser, or serve the folder:
 
 ```sh
-python3 -m http.server 8000
+cd www && python3 -m http.server 8000
+```
+
+**iPhone app:** built with [Capacitor](https://capacitorjs.com). The Xcode
+project is in `ios/`. See [APP_STORE.md](APP_STORE.md) for building, the
+iPhone-only features and publishing to the App Store.
+
+```sh
+npm ci && npm run sync    # then open ios/App/App.xcodeproj in Xcode
 ```
 
 ## Adding jokes
-Write new jokes one per line as `setup|punchline` in a text file, then run:
+Jokes live in `www/jokes.js`. Write new jokes one per line as `setup|punchline` in a text file, then run:
 
 ```sh
 node scripts/add_jokes.js new-jokes.txt

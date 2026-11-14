@@ -1,0 +1,16 @@
+{
+  "appId": "com.yorksports3.dadjokes",
+  "appName": "DAD. Jokes",
+  "webDir": "www",
+  "backgroundColor": "#0b0b0c",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#0b0b0c",
+    "scheme": "DAD"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "iconColor": "#e8b94a"
+    }
+  }
+}
