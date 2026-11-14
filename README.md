@@ -33,4 +33,4 @@ node scripts/add_jokes.js --pg13 new-jokes.txt   # PG-13 list
 ```
 
 Duplicates (same setup or same punchline) are skipped automatically. A weekly
-scheduled task adds 15 new jokes this way and republishes the hosted page.
+scheduled task adds 15 clean and 5 PG-13 jokes this way and republishes the hosted page.
