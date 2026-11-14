@@ -225,3 +225,6 @@ input[type="time"] {
   * { animation: none !important; transition: none !important; }
 }
 .is-native .hint { display: none; }
+.foot { margin-top: 20px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+.foot a { color: var(--muted); text-decoration: none; }
+.foot a:hover { color: var(--ink); }

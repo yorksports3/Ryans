@@ -78,9 +78,9 @@ Big, bold type. A gold punchline that arrives on your tap. Hundreds of hand-pick
 
 **Privacy:**
 - *App Privacy* → **Data Not Collected**.
-- *Privacy Policy URL* must be a public web address. The policy is in `www/privacy.html`. Host it publicly, for example by enabling GitHub Pages for the repo or sharing the published page publicly, and paste that link.
+- *Privacy Policy URL* must be a public web address. The policy is in `www/privacy.html`. It is hosted on GitHub Pages at <https://yorksports3.github.io/Ryans/privacy.html>. Paste that link.
 
-**Support URL:** any public page or email contact page you control.
+**Support URL:** <https://yorksports3.github.io/Ryans/> works, or any contact page you control.
 
 **Screenshots:**
 - Required: **6.9-inch iPhone** (1320 × 2868).
