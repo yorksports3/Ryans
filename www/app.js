@@ -32,7 +32,22 @@
   let online = true; // turned off after the first failed fetch
 
   const keyOf = (j) => (j.setup + "|" + j.punch).toLowerCase();
-  const allLocal = () => window.LOCAL_JOKES.map(([setup, punch]) => ({ setup, punch }));
+  const toJokes = (list) => (list || []).map(([setup, punch]) => ({ setup, punch }));
+  const cleanJokes = () => toJokes(window.LOCAL_JOKES);
+
+  // ---------- Joke list: clean (default) or PG-13 ----------
+  // PG-13 only affects jokes shown in the app. Notifications and the widget
+  // always use the clean list because they appear on the lock screen.
+  let mode = store.get("dad.mode", "clean") === "pg13" && window.PG13_JOKES ? "pg13" : "clean";
+  const modeToggle = $("modeToggle"), eyebrowText = $("eyebrowText");
+  const allLocal = () => (mode === "pg13" ? toJokes(window.PG13_JOKES) : cleanJokes());
+
+  function syncMode() {
+    const on = mode === "pg13";
+    document.documentElement.classList.toggle("pg13", on);
+    modeToggle.setAttribute("aria-pressed", String(on));
+    eyebrowText.textContent = on ? "After hours · PG-13" : "Jokes on demand";
+  }
 
   function shuffle(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
@@ -72,7 +87,8 @@
 
   async function getJoke() {
     // Mix online and local jokes for variety; fall back silently.
-    if (online && Math.random() < 0.6) {
+    // The online source is family-friendly, so only use it in clean mode.
+    if (mode === "clean" && online && Math.random() < 0.6) {
       for (let i = 0; i < 2; i++) {
         try {
           const j = await fetchOnline();
@@ -190,7 +206,7 @@
   async function scheduleDaily() {
     await cancelDaily();
     const [h, m] = daily.time.split(":").map(Number);
-    const jokes = shuffle(allLocal().filter((j) => j.punch));
+    const jokes = shuffle(cleanJokes().filter((j) => j.punch));
     const first = new Date(); first.setHours(h, m, 0, 0);
     if (first <= new Date()) first.setDate(first.getDate() + 1);
     const notifications = [];
@@ -247,6 +263,17 @@
     if (daily.on) applyDaily(); // top up the queue on every launch
   }
 
+  // ---------- Mode toggle ----------
+  modeToggle.addEventListener("click", () => {
+    mode = mode === "pg13" ? "clean" : "pg13";
+    store.set("dad.mode", mode);
+    deck = [];
+    syncMode();
+    haptic("MEDIUM");
+    toast(mode === "pg13" ? "PG-13 mode on" : "Family-friendly");
+    loadJoke();
+  });
+
   // ---------- Wiring ----------
   primaryBtn.addEventListener("click", () => (revealed ? loadJoke() : reveal()));
   saveBtn.addEventListener("click", toggleSave);
@@ -275,6 +302,7 @@
     else if (e.key === "Escape") closePanels();
   });
 
+  syncMode();
   renderFavs();
   loadJoke();
 })();

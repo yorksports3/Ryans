@@ -69,12 +69,15 @@ Big, bold type. A gold punchline that arrives on your tap. Hundreds of hand-pick
 • Save your favourites for the next family dinner.
 • Rate every joke on the Groan Meter, from Mild Chuckle to Peak Dad.
 • Share jokes to Messages, WhatsApp and more.
+• Optional PG-13 mode for cheekier after-hours jokes. Off by default.
 • Works offline. No accounts, no ads, no tracking.
 ```
 
 **Keywords (100 chars):** `dad jokes,jokes,puns,funny,humor,daily joke,widget,pun,laugh,family,clean jokes,one liners`
 
-**Category:** Entertainment · **Age rating:** 4+ (answer "None" to every content question)
+**Category:** Entertainment
+
+**Age rating:** because of the optional PG-13 mode, answer **"Infrequent/Mild"** for *Mature or Suggestive Themes*, *Profanity or Crude Humor* and *Alcohol, Tobacco, or Drug Use or References*, and "None" for everything else. Apple will likely rate the app **13+** (older questionnaires show 12+). If you'd rather keep a 4+ rating for a wider audience, ask Claude to leave PG-13 mode out of the App Store build.
 
 **Privacy:**
 - *App Privacy* → **Data Not Collected**.
@@ -95,5 +98,5 @@ In the app's page, pick your build, answer the export question (already set to "
 ---
 
 ## Updating the app later
-- **New jokes:** run `node scripts/add_jokes.js new-jokes.txt`, then `npm run sync` and upload a new build with a higher *Build* number. The weekly scheduled task updates the web page and `www/jokes.js`. The App Store version only changes when you upload a new build.
+- **New jokes:** run `node scripts/add_jokes.js new-jokes.txt` (add `--pg13` for the PG-13 list), then `npm run sync` and upload a new build with a higher *Build* number. The weekly scheduled task updates the web page and `www/jokes.js`. The App Store version only changes when you upload a new build.
 - **Version numbers:** bump *Version* (1.0 → 1.1) for each release in Xcode → App target → General. Use the same values on the widget target.

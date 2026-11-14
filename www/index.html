@@ -14,13 +14,14 @@
   <header class="top">
     <div class="brand">DAD<span>.</span></div>
     <nav>
+      <button class="pill" id="modeToggle" aria-pressed="false" title="Toggle PG-13 jokes">PG-13</button>
       <button class="link native-only" id="settingsToggle" aria-label="Daily joke settings">Daily</button>
       <button class="link" id="favToggle" aria-expanded="false">Saved <span id="favCount">0</span></button>
     </nav>
   </header>
 
   <main>
-    <p class="eyebrow"><span class="rule"></span> Jokes on demand</p>
+    <p class="eyebrow"><span class="rule"></span> <span id="eyebrowText">Jokes on demand</span></p>
 
     <article class="card" id="card" aria-live="polite">
       <h1 class="setup" id="setup">Loading something groan-worthy…</h1>
@@ -77,6 +78,7 @@
   <div class="toast" id="toast"></div>
 
   <script src="jokes.js"></script>
+  <script src="jokes-pg13.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

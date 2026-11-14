@@ -1,6 +1,6 @@
-// Curated offline joke library. Used when the online source is unavailable,
-// and mixed in for variety. Format: [setup, punchline] (punchline may be empty
-// for one-liners). Add jokes with: node scripts/add_jokes.js new-jokes.txt
+// Curated clean joke library (default list).
+// Format: [setup, punchline] (punchline may be empty for one-liners).
+// Add jokes with: node scripts/add_jokes.js new-jokes.txt
 window.LOCAL_JOKES = [
   ["I'm reading a book about anti-gravity.","It's impossible to put down."],
   ["Why don't skeletons fight each other?","They don't have the guts."],
