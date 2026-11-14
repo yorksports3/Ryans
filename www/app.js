@@ -45,7 +45,8 @@
   function syncMode() {
     const on = mode === "pg13";
     document.documentElement.classList.toggle("pg13", on);
-    modeToggle.setAttribute("aria-pressed", String(on));
+    modeToggle.querySelectorAll("button").forEach((b) =>
+      b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
     eyebrowText.textContent = on ? "After hours · PG-13" : "Jokes on demand";
   }
 
@@ -291,8 +292,10 @@
   }
 
   // ---------- Mode toggle ----------
-  modeToggle.addEventListener("click", () => {
-    mode = mode === "pg13" ? "clean" : "pg13";
+  modeToggle.addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-mode]");
+    if (!b || b.dataset.mode === mode) return;
+    mode = b.dataset.mode;
     store.set("dad.mode", mode);
     deck = [];
     syncMode();
