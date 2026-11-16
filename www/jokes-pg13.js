@@ -66,4 +66,9 @@ window.PG13_JOKES = [
   ["I've been married thirty years and I'm still in love with the same woman.","If my wife finds out, she'll kill me."],
   ["Why did the barista quit?","She'd had enough of the daily grind and everyone's crap at 7am."],
   ["My wife told me to take the spider out instead of killing it.","We went out for drinks. Nice guy. He's a web designer."],
+  ["Why do dads spend so long in the bathroom?","It's the only room in the house with a lock and nobody asking for money."],
+  ["I don't need a hairdresser anymore.","My pillow gives me a new damn hairdo every morning."],
+  ["I've been on a whisky diet.","I've lost three days already."],
+  ["The secret to our happy marriage? We go to a lovely restaurant twice a week.","She goes Tuesdays, I go Fridays."],
+  ["I asked the bartender for something tall, cold and full of gin.","He introduced me to his wife."],
 ];
