@@ -71,4 +71,9 @@ window.PG13_JOKES = [
   ["I've been on a whisky diet.","I've lost three days already."],
   ["The secret to our happy marriage? We go to a lovely restaurant twice a week.","She goes Tuesdays, I go Fridays."],
   ["I asked the bartender for something tall, cold and full of gin.","He introduced me to his wife."],
+  ["I asked my doctor how long I'd live if I gave up beer, bacon and naps.","He said not any longer — it'll just feel like a hell of a lot longer."],
+  ["What's the difference between a hangover and a dad joke?","Eventually the hangover goes away."],
+  ["Marriage tip: always make sure you get the last word.","And make sure that word is \"Yes, dear.\""],
+  ["I told my doctor I broke my arm in two places.","He told me to stop going to those damn places."],
+  ["You know you're getting old…","when your knees make more noise than your kids do."],
 ];
