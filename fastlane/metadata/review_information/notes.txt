@@ -1,7 +1,0 @@
-DAD. is a native iPhone app, not a website. It works fully offline with a bundled library of 300+ jokes. iOS features:
-• Local daily notifications (bell icon in the header) with a user-chosen time; tapping one opens that joke.
-• A WidgetKit widget for the Home Screen (small, medium, large) and Lock Screen.
-• Haptic feedback on reveal, save and Groan Meter ratings.
-• The native share sheet.
-PG-13 mode is optional and off by default (PG | PG-13 switch in the header). Notifications and the widget always use the family-friendly list.
-No account or login is needed.

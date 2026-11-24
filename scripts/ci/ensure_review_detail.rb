@@ -20,3 +20,19 @@ rescue StandardError
   v.create_app_store_review_detail(attributes: {})
   puts "Created the App Review Information section."
 end
+
+# Diagnostics: show which languages the listing has, so it's clear where text lands.
+begin
+  puts "App primary locale: #{app.primary_locale}"
+  info = app.fetch_edit_app_info || app.fetch_live_app_info
+  if info
+    info.get_app_info_localizations.each do |l|
+      puts "App Info [#{l.locale}] subtitle=#{l.subtitle.inspect} privacy_url=#{l.privacy_policy_url.inspect}"
+    end
+  end
+  v.get_app_store_version_localizations.each do |l|
+    puts "Version [#{l.locale}] description set: #{!l.description.to_s.empty?}, keywords set: #{!l.keywords.to_s.empty?}"
+  end
+rescue StandardError => e
+  puts "(Couldn't list localizations: #{e.class})"
+end
