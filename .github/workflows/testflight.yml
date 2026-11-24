@@ -78,6 +78,8 @@ jobs:
           echo "API key looks valid."
 
       - name: Archive (signed for App Store)
+        # "Apple Distribution" makes automatic signing fetch App Store profiles,
+        # which (unlike development profiles) don't need a registered iPhone.
         run: |
           xcodebuild -version
           xcodebuild \
@@ -92,6 +94,7 @@ jobs:
             -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             DEVELOPMENT_TEAM="$TEAM_ID" \
             CODE_SIGN_STYLE=Automatic \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
             MARKETING_VERSION="$VERSION" \
             CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
             archive > archive.log 2>&1 && status=0 || status=$?
