@@ -58,6 +58,9 @@ jobs:
           cp appstore/screenshots/*.png "$RUNNER_TEMP/screenshots/en-US/"
           ls "$RUNNER_TEMP/screenshots/en-US"
 
+      - name: Make sure the App Review section exists
+        run: ruby scripts/ci/ensure_review_detail.rb "$RUNNER_TEMP/asc_api_key.json" com.yorksports3.dadjokes "$VERSION"
+
       - name: Upload listing to App Store Connect
         run: |
           if [ "$SCREENSHOTS" = "true" ]; then shots="--skip_screenshots false --overwrite_screenshots true"; else shots="--skip_screenshots true"; fi
