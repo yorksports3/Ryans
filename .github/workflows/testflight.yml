@@ -1,0 +1,126 @@
+name: Upload to TestFlight
+
+# Builds, signs and uploads the iPhone app to App Store Connect (TestFlight)
+# on a GitHub-hosted Mac. Run it by hand: Actions → Upload to TestFlight →
+# Run workflow. Signing is fully automatic using an App Store Connect API key.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   APPLE_TEAM_ID         10-character Team ID (developer.apple.com → Membership)
+#   ASC_KEY_ID            API key ID (App Store Connect → Users and Access → Integrations)
+#   ASC_ISSUER_ID         Issuer ID shown above the list of API keys
+#   ASC_KEY_P8            Full contents of the downloaded AuthKey_XXXX.p8 file
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "App version shown on the App Store (e.g. 1.0, 1.1)"
+        required: true
+        default: "1.0"
+
+concurrency:
+  group: testflight
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+      VERSION: ${{ inputs.version }}
+      # Every upload needs a new, higher build number. The run number always grows.
+      BUILD_NUMBER: ${{ github.run_number }}
+    steps:
+      - name: Check that the Apple secrets are set
+        run: |
+          missing=0
+          for v in TEAM_ID ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_P8; do
+            if [ -z "${!v}" ]; then echo "::error::Missing secret for $v. See APP_STORE.md."; missing=1; fi
+          done
+          if ! [[ "$VERSION" =~ ^[0-9]+(\.[0-9]+){1,2}$ ]]; then echo "::error::Version must look like 1.0 or 1.0.1"; missing=1; fi
+          exit $missing
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install and sync web assets
+        run: |
+          npm ci
+          npm run sync
+
+      - name: Write the API key
+        run: |
+          KEY_PATH="$RUNNER_TEMP/AuthKey_${ASC_KEY_ID}.p8"
+          printf '%s\n' "$ASC_KEY_P8" > "$KEY_PATH"
+          chmod 600 "$KEY_PATH"
+          echo "KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
+
+      - name: Archive (signed for App Store)
+        run: |
+          xcodebuild -version
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            CODE_SIGN_STYLE=Automatic \
+            MARKETING_VERSION="$VERSION" \
+            CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+            archive > archive.log 2>&1 && status=0 || status=$?
+          grep -E "error:|ARCHIVE (SUCCEEDED|FAILED)" archive.log || true
+          test "$status" -eq 0
+
+      - name: Upload to App Store Connect
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>${TEAM_ID}</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+            <key>uploadSymbols</key><true/>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" > upload.log 2>&1 && status=0 || status=$?
+          grep -E "error:|EXPORT (SUCCEEDED|FAILED)|Upload succeeded|Uploaded" upload.log || true
+          test "$status" -eq 0
+          echo "### Uploaded version $VERSION (build $BUILD_NUMBER) to App Store Connect" >> "$GITHUB_STEP_SUMMARY"
+          echo "It appears in TestFlight after Apple finishes processing (usually 15–30 minutes)." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove the API key
+        if: always()
+        run: rm -f "$KEY_PATH"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: testflight-logs
+          path: |
+            archive.log
+            upload.log
+          if-no-files-found: ignore

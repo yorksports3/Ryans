@@ -8,49 +8,59 @@ iPhone-only features:
 - **Native share sheet:** share to Messages, WhatsApp and so on.
 - **Home Screen and Lock Screen widget:** a different joke every day.
 
-Every push that changes the app runs **GitHub Actions → "iOS build"**. It
-compiles the app and widget on a Mac in the cloud, opens the app in the iPhone
-Simulator and saves a screenshot under the run's *Artifacts*.
+Two GitHub Actions workflows run on Macs in the cloud, so **you don't need a Mac**:
+
+- **iOS build** runs on every push. It compiles the app and widget and opens the app in the iPhone Simulator.
+- **Upload to TestFlight** runs only when you press *Run workflow*. It signs the app and uploads it to App Store Connect.
 
 ---
 
-## 1. Join the Apple Developer Program
+## Step 1. Join the Apple Developer Program (you)
 - Sign up at <https://developer.apple.com/programs/>. It costs $99/year.
 - Enroll as an **Individual** unless you have a registered company. A company needs a D-U-N-S number and takes longer.
-- Apple verifies your identity, which can take up to a couple of days.
+- Apple verifies your identity, which can take up to a couple of days. You can't do the next steps until it's approved.
 
-## 2. Pick how you'll build and upload
-Apple only accepts uploads built with Xcode on a Mac. Options:
+## Step 2. Create the app in App Store Connect (you, about 5 minutes)
+1. At <https://developer.apple.com/account/resources/identifiers/list>, click **+ → App IDs → App** and register:
+   - **Bundle ID (explicit):** `com.yorksports3.dadjokes`, with **Description** *DAD. Jokes*. No extra capabilities are needed.
+   - The upload workflow registers the widget's ID (`com.yorksports3.dadjokes.widget`) automatically. You can also add it here by hand.
+2. At <https://appstoreconnect.apple.com> → **Apps → + → New App**:
+   - **Platform:** iOS
+   - **Name:** must be unique on the store. "DAD." is probably taken. Try *DAD. Jokes*, *DAD. — Daily Dad Jokes* or *Groan: Dad Jokes*.
+   - **Primary language:** English (U.S.)
+   - **Bundle ID:** pick `com.yorksports3.dadjokes`
+   - **SKU:** anything, e.g. `dadjokes001`
+   - **User access:** Full Access
 
-| Option | Cost | Notes |
-|---|---|---|
-| **Any Mac with Xcode** (yours, borrowed, or a Mac mini) | Free if you have one | Simplest. Follow step 4 below. |
-| **GitHub Actions** (already set up for test builds) | Uses GitHub's macOS minutes | Ask Claude to extend the workflow to sign and upload to TestFlight. You'll add an App Store Connect API key as a GitHub secret. |
-| **Codemagic / Bitrise** | Free tiers available | Cloud Mac build services with guided signing setup. |
+## Step 3. Give GitHub permission to upload (you, about 5 minutes)
+**Create an API key**
+1. Go to App Store Connect → **Users and Access → Integrations → App Store Connect API → Team Keys**. You may need to click *Request Access* first.
+2. Click **+**. Name it *GitHub upload* and give it **Admin** access. Admin is needed so the workflow can create signing certificates for you.
+3. **Download** the `.p8` file. Apple only lets you download it once.
+4. Note the **Key ID** next to the key, and the **Issuer ID** shown above the list.
+5. Find your **Team ID** at <https://developer.apple.com/account> → *Membership details*.
 
-## 3. Create the app in App Store Connect
-At <https://appstoreconnect.apple.com> → **Apps → +**:
+**Add four secrets to GitHub**
+Go to <https://github.com/yorksports3/Ryans/settings/secrets/actions> → **New repository secret**:
 
-- **Platform:** iOS
-- **Name:** must be unique on the store. "DAD." may be taken; alternatives: *DAD. Jokes*, *DAD. — Daily Dad Jokes*, *Groan: Dad Jokes*.
-- **Bundle ID:** `com.yorksports3.dadjokes`. Register it first under *Certificates, Identifiers & Profiles → Identifiers*, plus `com.yorksports3.dadjokes.widget` for the widget. To use a different ID, change `appId` in `capacitor.config.json` and both `PRODUCT_BUNDLE_IDENTIFIER`s in Xcode.
-- **SKU:** anything, e.g. `dadjokes001`
+| Name | Value |
+|---|---|
+| `APPLE_TEAM_ID` | your Team ID |
+| `ASC_KEY_ID` | the Key ID |
+| `ASC_ISSUER_ID` | the Issuer ID |
+| `ASC_KEY_P8` | open the `.p8` file in a text editor and paste **everything**, including the `-----BEGIN PRIVATE KEY-----` and `-----END PRIVATE KEY-----` lines |
 
-## 4. Build and upload from a Mac
-```sh
-git clone https://github.com/yorksports3/Ryans.git && cd Ryans
-git checkout claude/relaxed-gauss-88xww2
-npm ci
-npm run sync          # copies the web app + jokes into the iOS project
-open ios/App/App.xcodeproj
-```
-In Xcode:
-1. Select the **App** target → *Signing & Capabilities* → tick *Automatically manage signing* and choose your Team. Do the same for the **DadJokesWidget** target.
-2. Choose *Any iOS Device (arm64)* as the destination, then **Product → Archive**.
-3. In the Organizer: **Distribute App → App Store Connect → Upload**.
-4. The build appears in App Store Connect → **TestFlight** after processing (about 15–30 min). Install it on your iPhone with the TestFlight app and try everything.
+> Never paste the key into a chat or commit it to the repo. GitHub secrets are encrypted and hidden from logs.
 
-## 5. Fill in the listing
+## Step 4. Upload a build (one click)
+1. Go to <https://github.com/yorksports3/Ryans/actions/workflows/testflight.yml>.
+2. Click **Run workflow**. Leave the version at `1.0` for the first release, then click **Run workflow**.
+3. It takes about 10–20 minutes. When it's green, the build appears in App Store Connect → your app → **TestFlight** after Apple processes it (another 15–30 minutes).
+4. Install **TestFlight** from the App Store on your iPhone and add yourself as an internal tester to try the real app: notifications, widget, haptics and share.
+
+The workflow gives every upload a new build number automatically. If a run fails, ask Claude to read its logs.
+
+## Step 5. Fill in the listing
 Draft text you can paste:
 
 **Subtitle (30 chars):** `Daily groaners, beautifully.`
@@ -64,10 +74,10 @@ DAD. is the dad joke app that takes its terrible jokes very seriously.
 Big, bold type. A gold punchline that arrives on your tap. Hundreds of hand-picked groaners, with new ones added every week.
 
 • Setup first, punchline on tap. Timing is everything.
+• Rate every joke on the Groan Meter, from Meh to Peak Dad.
 • Daily joke notification at the time you choose.
 • Home Screen and Lock Screen widget with a new joke every day.
 • Save your favourites for the next family dinner.
-• Rate every joke on the Groan Meter, from Mild Chuckle to Peak Dad.
 • Share jokes to Messages, WhatsApp and more.
 • Optional PG-13 mode for cheekier after-hours jokes. Off by default.
 • Works offline. No accounts, no ads, no tracking.
@@ -81,22 +91,41 @@ Big, bold type. A gold punchline that arrives on your tap. Hundreds of hand-pick
 
 **Privacy:**
 - *App Privacy* → **Data Not Collected**.
-- *Privacy Policy URL* must be a public web address. The policy is in `www/privacy.html`. It is hosted on GitHub Pages at <https://yorksports3.github.io/Ryans/privacy.html>. Paste that link.
+- *Privacy Policy URL:* <https://yorksports3.github.io/Ryans/privacy.html>
 
-**Support URL:** <https://yorksports3.github.io/Ryans/> works, or any contact page you control.
+**Support URL:** <https://yorksports3.github.io/Ryans/>
 
-**Screenshots:**
-- Required: **6.9-inch iPhone** (1320 × 2868).
-- The app currently also runs on iPad, so Apple will ask for **13-inch iPad** screenshots too. To skip iPad, ask Claude to make it iPhone-only.
-- Take them in TestFlight on a large iPhone, or in Xcode's Simulator (iPhone 17 Pro Max), with **File → Save Screen**. Good shots: a setup, a revealed punchline, the widget, the daily-joke settings.
+**Screenshots** are ready in [`appstore/screenshots/`](appstore/screenshots/). Upload them in this order:
 
-## 6. Submit for review
-In the app's page, pick your build, answer the export question (already set to "no encryption" in `Info.plist`) and **Submit for Review**. Reviews usually take 1–3 days.
+| Device size in App Store Connect | Files |
+|---|---|
+| **iPhone 6.9"** (1320 × 2868) | `iphone-1-setup.png` … `iphone-5-saved.png` |
+| **iPad 13"** (2064 × 2752) | `ipad-1-setup.png` … `ipad-5-saved.png` |
 
-**If it's rejected for "minimum functionality" (4.2) or "spam" (4.3):** Apple is strict with joke apps and simple web wrappers. In your review notes, mention the native features: notifications, widget, haptics, share sheet and offline library. Claude can help write an appeal or add more native features.
+They show a setup, a punchline with the Groan Meter, PG-13 mode, the daily-joke settings and saved jokes. If you take your own in TestFlight, a widget shot is a great addition.
+
+**App Review notes** (paste into *App Review Information → Notes*):
+```
+DAD. is a native iPhone app, not a website. It works fully offline with a bundled library of 300+ jokes that is updated weekly. iOS features:
+• Local daily notifications (Daily button, bell icon in the header) with a user-chosen time; tapping one opens that joke.
+• A WidgetKit widget for the Home Screen (small, medium, large) and Lock Screen.
+• Haptic feedback on reveal, save and Groan Meter ratings.
+• The native share sheet.
+PG-13 mode is optional and off by default (PG | PG-13 switch in the header). Notifications and the widget always use the family-friendly list.
+No account or login is needed.
+```
+
+## Step 6. Submit for review
+In the app's page:
+1. Under the version, click **Add Build** and pick your TestFlight build.
+2. Answer the export-compliance question. The app already declares "no non-exempt encryption".
+3. Click **Submit for Review**.
+
+Reviews usually take 1–3 days. If Apple rejects it, for example under 4.2 "minimum functionality" or 4.3 "spam", which they're strict about for joke apps, share the message with Claude to help with fixes or a reply.
 
 ---
 
 ## Updating the app later
-- **New jokes:** run `node scripts/add_jokes.js new-jokes.txt` (add `--pg13` for the PG-13 list), then `npm run sync` and upload a new build with a higher *Build* number. The weekly scheduled task updates the web page and `www/jokes.js`. The App Store version only changes when you upload a new build.
-- **Version numbers:** bump *Version* (1.0 → 1.1) for each release in Xcode → App target → General. Use the same values on the widget target.
+- **New jokes** reach the web page and GitHub Pages weekly on their own. The App Store version only changes when you upload a new build: run **Upload to TestFlight** again, then submit the new build.
+- **New version:** enter a higher version (e.g. `1.1`) when you run the workflow. Build numbers increase automatically.
+- **With a Mac instead:** `npm ci && npm run sync`, open `ios/App/App.xcodeproj`, set your Team on the **App** and **DadJokesWidget** targets, then **Product → Archive → Distribute App**.
