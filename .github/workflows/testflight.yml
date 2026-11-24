@@ -77,9 +77,11 @@ jobs:
           fi
           echo "API key looks valid."
 
-      - name: Archive (signed for App Store)
-        # "Apple Distribution" makes automatic signing fetch App Store profiles,
-        # which (unlike development profiles) don't need a registered iPhone.
+      - name: Archive (unsigned)
+        # Automatic signing only signs archives for development, which needs a
+        # registered iPhone. So archive unsigned here and let the export step
+        # below sign it for the App Store with a cloud-managed distribution
+        # certificate, which needs no device.
         run: |
           xcodebuild -version
           xcodebuild \
@@ -88,20 +90,17 @@ jobs:
             -configuration Release \
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/App.xcarchive" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$KEY_PATH" \
-            -authenticationKeyID "$ASC_KEY_ID" \
-            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             DEVELOPMENT_TEAM="$TEAM_ID" \
-            CODE_SIGN_STYLE=Automatic \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
             MARKETING_VERSION="$VERSION" \
             CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
             archive > archive.log 2>&1 && status=0 || status=$?
           grep -E "error:|ARCHIVE (SUCCEEDED|FAILED)" archive.log || true
           test "$status" -eq 0
 
-      - name: Upload to App Store Connect
+      - name: Sign and upload to App Store Connect
         run: |
           cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
