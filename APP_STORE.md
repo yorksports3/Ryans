@@ -61,7 +61,11 @@ Go to <https://github.com/yorksports3/Ryans/settings/secrets/actions> → **New 
 The workflow gives every upload a new build number automatically. If a run fails, ask Claude to read its logs.
 
 ## Step 5. Fill in the listing
-Draft text you can paste:
+**Automatic part:** GitHub → **Actions → Update App Store listing → Run workflow** uploads the subtitle, description, keywords, promotional text, support/marketing/privacy links, category and all screenshots. The text lives in `fastlane/metadata/` and the images in `appstore/screenshots/`; edit those and re-run to change the listing.
+
+**Still done by hand in App Store Connect:** App Privacy, age rating, price, copyright and the App Review contact details (see below).
+
+The listing text, for reference:
 
 **Subtitle (30 chars):** `Daily groaners, beautifully.`
 
@@ -71,7 +75,7 @@ Draft text you can paste:
 ```
 DAD. is the dad joke app that takes its terrible jokes very seriously.
 
-Big, bold type. A gold punchline that arrives on your tap. Hundreds of hand-picked groaners, with new ones added every week.
+Big, bold type. A gold punchline that arrives on your tap. Hundreds of hand-picked groaners, with more in every update.
 
 • Setup first, punchline on tap. Timing is everything.
 • Rate every joke on the Groan Meter, from Meh to Peak Dad.

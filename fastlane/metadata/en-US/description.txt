@@ -1,0 +1,12 @@
+DAD. is the dad joke app that takes its terrible jokes very seriously.
+
+Big, bold type. A gold punchline that arrives on your tap. Hundreds of hand-picked groaners, with more in every update.
+
+• Setup first, punchline on tap. Timing is everything.
+• Rate every joke on the Groan Meter, from Meh to Peak Dad.
+• Daily joke notification at the time you choose.
+• Home Screen and Lock Screen widget with a new joke every day.
+• Save your favourites for the next family dinner.
+• Share jokes to Messages, WhatsApp and more.
+• Optional PG-13 mode for cheekier after-hours jokes. Off by default.
+• Works offline. No accounts, no ads, no tracking.
